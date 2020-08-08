@@ -49,7 +49,13 @@ fn main() {
     let width = 640;
     let height = 480;
     let window = video_subsystem
-        .window("SDL", width, height)
+        .window("SDL", width, height) // builder
+        .position_centered()
+        // .borderless()
+        .resizable()
+        // .hidden()
+        // .fullscreen()
+        // .fullscreen_desktop()
         .build()
         .unwrap();
 
