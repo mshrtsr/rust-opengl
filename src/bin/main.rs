@@ -4,10 +4,47 @@ use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use std::time::Duration;
 
+use std::mem;
+use std::os::raw::c_void;
+
+use c_str_macro::c_str;
+use cgmath::perspective;
+use cgmath::prelude::SquareMatrix;
+use gl::types::{GLfloat, GLsizei, GLsizeiptr};
+
+mod shader;
+mod vertex;
+
+use shader::Shader;
+use vertex::Vertex;
+
+#[allow(dead_code)]
+type Point3 = cgmath::Point3<f32>;
+#[allow(dead_code)]
+type Vector3 = cgmath::Vector3<f32>;
+#[allow(dead_code)]
+type Matrix4 = cgmath::Matrix4<f32>;
+
+const WINDOW_WIDTH: u32 = 640;
+const WINDOW_HEIGHT: u32 = 480;
+const FLOAT_NUM: usize = 3;
+const VERTEX_NUM: usize = 3;
+const BUF_LEN: usize = FLOAT_NUM * VERTEX_NUM;
+
 fn main() {
     // init window
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
+
+    {
+        // set OpenGL profile and version to GLAttr
+        let gl_attr = video_subsystem.gl_attr();
+        gl_attr.set_context_profile(sdl2::video::GLProfile::Core); // Core
+        gl_attr.set_context_version(3, 1); // Version 3.1
+        let (major, minor) = gl_attr.context_version();
+        println!("OK: init OpenGL: version={}.{}", major, minor);
+    }
+    // gl_attr is released here
 
     let width = 640;
     let height = 480;
@@ -15,6 +52,23 @@ fn main() {
         .window("SDL", width, height)
         .build()
         .unwrap();
+
+    // create OpenGL context
+    let _gl_context = window.gl_create_context().unwrap();
+    // load OpenGL APIs
+    gl::load_with(|s| video_subsystem.gl_get_proc_address(s) as _);
+
+    // let shader = Shader::new("rsc/shader/shader.vs", "rsc/shader/shader.fs");
+
+    // set buffer
+    #[rustfmt::skip]
+    let buffer_array: [f32; BUF_LEN] = [
+        -1.0, -1.0, 0.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+    ];
+
+    // let vertext = Vertex::new();
 
     let mut canvas = window.into_canvas().build().unwrap();
 
