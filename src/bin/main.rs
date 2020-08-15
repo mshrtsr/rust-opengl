@@ -12,11 +12,8 @@ use cgmath::perspective;
 use cgmath::prelude::SquareMatrix;
 use gl::types::{GLfloat, GLsizei, GLsizeiptr};
 
-mod shader;
-mod vertex;
-
-use shader::Shader;
-use vertex::Vertex;
+use rust_opengl::shader::Shader;
+use rust_opengl::vertex::Vertex;
 
 #[allow(dead_code)]
 type Point3 = cgmath::Point3<f32>;
@@ -64,7 +61,7 @@ fn main() {
     // load OpenGL APIs
     gl::load_with(|s| video_subsystem.gl_get_proc_address(s) as _);
 
-    // let shader = Shader::new("rsc/shader/shader.vs", "rsc/shader/shader.fs");
+    let shader = Shader::new("rsc/shader/shader.vs", "rsc/shader/shader.fs");
 
     // set buffer
     #[rustfmt::skip]
